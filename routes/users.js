@@ -55,7 +55,7 @@ function connectUserByToken(req, res) {
 //Login user
 function login(req, res) {
     
-    User.findOne({$or: [{email: req.body.email},{login: req.body.login}]}, function (err, user) {
+    User.findOne({$or: [{email: req.body.email},{login: req.body.login}],role:req.body.role}, function (err, user) {
         if (err) return res.status(500).send('Error on the server.');
         if (!user) return res.status(404).send('No user found.');
         
