@@ -1,16 +1,10 @@
-var express = require('express');
-var router = express.Router();
-var bodyParser = require('body-parser');
-
-
 var User = require('../model/user');
-
 var jwt = require('jsonwebtoken');
 var bcrypt = require('bcryptjs');
 var config = require('../config/config');
 
 // CREATES A NEW USER
-function createUser(req, res) {
+exports.createUser = (req, res) => {
     console.log(req.body);
     var hashedPassword = bcrypt.hashSync(req.body.password, 8);
     var role = req.body.role;
@@ -19,11 +13,11 @@ function createUser(req, res) {
     }
 
     User.create({
-            login: req.body.login,
-            email: req.body.email,
-            password: hashedPassword,
-            role: role
-        },
+        login: req.body.login,
+        email: req.body.email,
+        password: hashedPassword,
+        role: role
+    },
         function (err, user) {
             if (err) return res.status(500).send("There was a problem registering the user.")
             // create a token
@@ -40,7 +34,7 @@ function createUser(req, res) {
 };
 
 //GET USER BY TOKEN
-function connectUserByToken(req, res) {
+exports.connectUserByToken = (req, res) => {
     console.log(" connectUserByToken:");
     var token = req.headers['x-access-token'];
     if (!token) return res.status(401).send({
@@ -68,7 +62,7 @@ function connectUserByToken(req, res) {
 };
 
 //Login user
-function login(req, res) {
+exports.login = (req, res) => {
     User.findOne({
         $or: [{
             email: req.body.email
@@ -77,7 +71,7 @@ function login(req, res) {
         }]
         /**
          * Pas besoin de role pour le login
-         */ 
+         */
         //role: req.body.role  
     }, function (err, user) {
         if (err) return res.status(500).send('Error on the server.');
@@ -86,7 +80,7 @@ function login(req, res) {
         var passwordIsValid = bcrypt.compareSync(req.body.password, user.password);
         if (!passwordIsValid) return res.status(401).send({
             auth: false,
-            token: null
+            token: null,
         });
 
         var token = jwt.sign({
@@ -97,23 +91,17 @@ function login(req, res) {
 
         res.status(200).send({
             auth: true,
-            token: token
+            token: token,
+            connected: user
         });
     });
 
 };
 
-//Log out but useless
-function logout(req, res) {
+//Log out
+exports.logout = (req, res) => {
     res.status(200).send({
         auth: false,
         token: null
     });
-};
-
-module.exports = {
-    createUser,
-    connectUserByToken,
-    login,
-    logout
 };

@@ -6,6 +6,9 @@ let mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 let bodyParser = require('body-parser');
 let user = require('./routes/users');
+let match = require('./routes/match');
+let equipe = require('./routes/equipe');
+let pari = require('./routes/pari');
 
 let uri = config.dburi;
 
@@ -40,8 +43,9 @@ let port = process.env.PORT || 8010;
 
 // les routes
 const prefixUser = '/api/users';
+const prefix = '/api';
 
-// Users
+/*------------------ User -----------------*/
 app.route(prefixUser + '/register')
     .post(user.createUser);
 app.route(prefixUser + '/auth')
@@ -51,6 +55,44 @@ app.route(prefixUser + '/login')
 app.route(prefixUser + '/logout')
     .post(user.logout);
 
+
+
+/*------------------ Match -----------------*/
+app.route(prefix + '/match')
+    .post(match.createMatch);
+
+app.route(prefix + '/match/:id')
+    .get(match.findByMatch);
+
+app.route(prefix + '/match/pari/:id')
+    .get(match.findByPari);
+
+app.route(prefix + '/matchs')
+    .get(match.getAllMatch);
+
+
+/*------------------ Equipe -----------------*/
+app.route(prefix + '/equipe')
+    .post(equipe.createEquipe);
+
+app.route(prefix + '/equipe/:id')
+    .get(equipe.findById)
+    .post(equipe.update)
+
+app.route(prefix + '/equipes')
+    .get(equipe.getAllEquipe);
+
+
+/*------------------ Pari -----------------*/
+app.route(prefix + '/pari')
+    .post(pari.createpari);
+
+app.route(prefix + '/pari/:id')
+    .get(pari.findById)
+    .post(pari.update)
+
+app.route(prefix + '/paris')
+    .get(pari.getAll);
 // On démarre le serveur
 app.listen(port, "0.0.0.0");
 console.log('Serveur démarré sur http://localhost:' + port);
