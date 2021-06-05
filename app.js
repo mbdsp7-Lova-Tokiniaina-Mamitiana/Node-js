@@ -85,7 +85,7 @@ app.route(prefix + '/equipes')
 
 /*------------------ Pari -----------------*/
 app.route(prefix + '/pari')
-    .post(pari.createpari);
+    .post(pari.create);
 
 app.route(prefix + '/pari/:id')
     .get(pari.findById)
