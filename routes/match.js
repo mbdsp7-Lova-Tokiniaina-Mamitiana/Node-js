@@ -27,33 +27,127 @@ exports.getAllMatch = (req, res) => {
 }
 
 exports.findByMatch = (req, res) => {
-    match.findOne({_id:req.params.id})
-    .populate({
-        path: 'pari',
-        match: { _id: { $ne: null } }
-    })
-    .sort({type: 1})
-    .exec((error, liste_match) => {
-        if (error) {
-            res.status(500).send("Internal server error");
-        } else {
-            res.status(200).json(liste_match);
-        }
-    });
+    match.findOne({ _id: req.params.id })
+        .populate({
+            path: 'pari',
+            match: { _id: { $ne: null } }
+        })
+        .sort({ date_match: 1 })
+        .exec((error, liste_match) => {
+            if (error) {
+                res.status(500).send("Internal server error");
+            } else {
+                res.status(200).json(liste_match);
+            }
+        });
 }
 
 exports.findByPari = (req, res) => {
     match.find()
-    .populate({
-        path: 'pari',
-        match: { _id: req.params.id }
-    })
-    .sort({type: 1})
-    .exec((error, liste_match) => {
-        if (error) {
-            res.status(500).send("Internal server error");
+        .populate({
+            path: 'pari',
+            match: { _id: req.params.id }
+        })
+        .sort({ date_match: 1 })
+        .exec((error, liste_match) => {
+            if (error) {
+                res.status(500).send("Internal server error");
+            } else {
+                res.status(200).json(liste_match);
+            }
+        });
+}
+
+exports.findByPari = (req, res) => {
+    match.find()
+        .populate({
+            path: 'pari',
+            match: { _id: req.params.id }
+        })
+        .sort({ date_match: 1 })
+        .exec((error, liste_match) => {
+            if (error) {
+                res.status(500).send("Internal server error");
+            } else {
+                res.status(200).json(liste_match);
+            }
+        });
+}
+
+exports.search = (req, res) => {
+    let periode = req.body.periode;
+    let etat = req.body.etat;
+    let pari = req.body.pari;
+    let equipe = req.body.equipe;
+    var list;
+
+    if (etat) {
+        if (periode) {
+            list = match.find({
+                etat: etat,
+                date_match: {
+                    $gte: periode.date_debut,
+                    $lte: periode.date_fin
+                }
+            })
         } else {
-            res.status(200).json(liste_match);
+            list = match.find({
+                etat: etat
+            });
         }
-    });
+    } else {
+        if (periode) {
+            list = match.find({
+                etat: etat,
+                date_match: {
+                    $gte: periode.date_debut,
+                    $lte: periode.date_fin
+                }
+            })
+        } else {
+            list = match.find()
+        }
+    }
+
+    if (pari) {
+        list.populate({
+            path: 'pari',
+            match: { _id: pari }
+        });
+    } else {
+        list.populate({
+            path: 'pari',
+            match: { _id: { $ne: null } }
+        });
+    }
+    if (equipe) {
+        list.populate({
+            path: 'equipe1',
+            match : {
+                nom : { $regex: '.*' + equipe + '.*' }
+            }
+        });
+        list.populate({
+            path: 'equipe2',
+            match : {
+                nom : { $regex: '.*' + equipe + '.*' }
+            }
+        });
+    } else {
+        list.populate({
+            path: 'equipe1',
+        });
+        list.populate({
+            path: 'equipe2',
+        });
+    }
+    
+    list.sort({ date_match: 1 })
+        .exec((error, liste_match) => {
+            if (error) {
+                res.status(500).send("Internal server error");
+            } else {
+                res.status(200).json(liste_match);
+            }
+        });
 }
