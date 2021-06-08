@@ -64,8 +64,18 @@ app.route(prefix + '/match')
 app.route(prefix + '/match/:id')
     .get(match.findByMatch);
 
-app.route(prefix + '/match/pari/:id')
-    .get(match.findByPari);
+
+/**
+ * => etat : etat du pari : true or false
+ * => periode : {
+ *  date_debut : date debut de la recherche (date du match)
+ *  date_fin : date fin de la recherche 
+ * }
+ * => pari : id du pari à rechercher
+ * => equipe : nom de l'équipe
+ */
+app.route(prefix + '/matchs/search')
+    .post(match.search);
 
 app.route(prefix + '/matchs')
     .get(match.getAllMatch);
