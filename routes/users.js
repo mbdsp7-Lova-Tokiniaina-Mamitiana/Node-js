@@ -48,8 +48,7 @@ exports.connectUserByToken = (req, res) => {
             message: 'Failed to authenticate token.'
         });
 
-
-        User.findById(decoded.id, {
+        User.findById(decoded.user._id, {
             password: 0
         }, function (err, user) {
             if (err) return res.status(500).send("There was a problem finding the user.");
