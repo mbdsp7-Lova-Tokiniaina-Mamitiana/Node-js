@@ -151,3 +151,18 @@ exports.search = (req, res) => {
             }
         });
 }
+
+exports.addPari = (req, res) => {
+    match.findOne({ _id: req.body.match})
+    .exec((error, liste_match) => {
+        if (error) {
+            res.status(500).send("Internal server error");
+        } else {
+            liste_match.pari.push(req.body.pari);
+            liste_match.save(function (error, liste) { 
+                if (error) return res.send(error);
+                res.status(200).json(liste);
+            })
+        }
+    });
+}
