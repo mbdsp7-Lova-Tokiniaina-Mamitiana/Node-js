@@ -21,10 +21,10 @@ const options = {
 
 mongoose.connect(uri, options)
     .then(() => {
-            console.log("Connecté à la base MongoDB assignments dans le cloud !");
-            console.log("at URI = " + uri);
-            console.log("vérifiez with http://localhost:8010/api/ que cela fonctionne")
-        },
+        console.log("Connecté à la base MongoDB assignments dans le cloud !");
+        console.log("at URI = " + uri);
+        console.log("vérifiez with http://localhost:8010/api/ que cela fonctionne")
+    },
         err => {
             console.log('Erreur de connexion: ', err);
         });
@@ -64,7 +64,8 @@ app.route(prefix + '/match')
 app.route(prefix + '/match/:id')
     .get(match.findByMatch);
 
-
+app.route(prefix + '/addPari')
+    .post(match.addPari);
 /**
  * => etat : etat du pari : true or false
  * => periode : {
@@ -103,6 +104,7 @@ app.route(prefix + '/pari/:id')
 
 app.route(prefix + '/paris')
     .get(pari.getAll);
+
 // On démarre le serveur
 app.listen(port, "0.0.0.0");
 console.log('Serveur démarré sur http://localhost:' + port);
