@@ -107,7 +107,9 @@ app.route(prefix + '/paris')
 
 // On démarre le serveur
 
-app.listen((process.env.PORT || 8010), function(){
+app.listen(port, () => {
     console.log('Serveur démarré sur http://localhost:' + port);
 });
+
+
 module.exports = app;
