@@ -12,8 +12,8 @@ function getAll(req, res) {
 }
 exports.createEquipe = (req, res) => {
     equipe.create(req.body)
-        .then(() => {
-            getAll(req, res);
+        .then((e) => {
+            res.status(200).send(e);
         })
         .catch(err => {
             res.status(500).json({ err });

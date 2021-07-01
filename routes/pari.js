@@ -12,8 +12,8 @@ function getAll(req, res) {
 }
 exports.create = (req, res) => {
     pari.create(req.body)
-        .then(() => {
-            getAll(req, res);
+        .then((p) => {
+            res.status(200).send(p);
         })
         .catch(err => {
             res.status(500).json({ err });
