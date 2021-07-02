@@ -168,3 +168,34 @@ exports.addPari = (req, res) => {
         }
     });
 }
+
+
+exports.terminer = (req, res) => {
+    match.findOne({ _id: req.body.match})
+    .exec((error, m) => {
+        if (error) {
+            res.status(500).send("Internal server error");
+        } else {
+            m.etat = false;
+            m.save(function (error, liste) { 
+                if (error) return res.send(error);
+                res.status(200).json(liste);
+            })
+        }
+    });
+}
+exports.removePari = (req, res) => {
+    match.findOne({ _id: req.body.match})
+    .exec((error, m) => {
+        var index = m.pari.indexOf(req.body.pari);
+        if (error) {
+            res.status(500).send("Internal server error");
+        } else {
+            m.pari.splice(index, 1);
+            m.save(function (error, liste) { 
+                if (error) return res.send(error);
+                res.status(200).json(liste);
+            })
+        }
+    });
+}

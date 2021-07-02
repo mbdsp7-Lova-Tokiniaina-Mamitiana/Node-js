@@ -66,6 +66,10 @@ app.route(prefix + '/match/:id')
 
 app.route(prefix + '/addPari')
     .post(match.addPari);
+app.route(prefix + '/terminerMatch')
+    .post(match.terminer);
+app.route(prefix + '/removePari')
+    .post(match.removePari);
 /**
  * => etat : etat du pari : true or false
  * => periode : {

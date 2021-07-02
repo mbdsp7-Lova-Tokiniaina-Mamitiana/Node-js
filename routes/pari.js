@@ -13,6 +13,7 @@ function getAll(req, res) {
 exports.create = (req, res) => {
     pari.create(req.body)
         .then((p) => {
+            console.log(p);
             res.status(200).send(p);
         })
         .catch(err => {
