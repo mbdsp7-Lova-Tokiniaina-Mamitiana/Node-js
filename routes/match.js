@@ -1,6 +1,8 @@
 const match = require('../model/match');
 
 exports.createMatch = (req, res) => {
+    console.log("requete match:");
+    console.log(req.body);
     match.create(req.body)
         .then((m) => {
             console.log("Match:");
@@ -8,6 +10,8 @@ exports.createMatch = (req, res) => {
             res.status(200).send(m);
         })
         .catch(err => {
+            console.log("error");
+            console.log(err);
             res.status(500).json({ err });
         });
 }
