@@ -1,4 +1,5 @@
 const match = require('../model/match');
+var config = require('../config/config');
 
 exports.createMatch = (req, res) => {
     match.create(req.body)
@@ -11,28 +12,32 @@ exports.createMatch = (req, res) => {
 }
 
 exports.getAllMatch = (req, res) => {
-    match.find()
-        .populate({
-            path: 'pari',
-            match: { _id: { $ne: null } },
-
-        })
-        .populate({
-            path: 'equipe1',
-            match: { _id: { $ne: null } },
-        })
-        .populate({
-            path: 'equipe2',
-            match: { _id: { $ne: null } },
-        })
-        .sort({ date_match: 1 })
-        .exec((error, list_match) => {
+    /* var aggregateQuery = match.aggregate();
+    match.aggregatePaginate(aggregateQuery, config.PaginationDefaultOptions,(error, list_match) => {
             if (error) {
                 res.status(500).send("Internal server error");
             } else {
                 res.status(200).json(list_match);
             }
-        });
+        }
+    ) */
+
+    var options = {
+        sort: { date_match: 1 },
+        populate: 'pari',
+        populate: 'equipe1',
+        populate: 'equipe2',
+        page: config.PaginationDefaultPageNumber, 
+        limit: config.PaginationDefaultLimit
+    };
+
+    match.paginate({}, options, (error, list_match) => {
+        if (error) {
+            res.status(500).send("Internal server error");
+        } else {
+            res.status(200).json(list_match);
+        }
+    })
 }
 
 exports.findByMatch = (req, res) => {
