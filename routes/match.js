@@ -1,5 +1,7 @@
 const match = require('../model/match');
 const moment= require('moment') ;
+var config = require('../config/config');
+
 
 exports.createMatch = (req, res) => {
     console.log("requete match:");
@@ -52,25 +54,53 @@ exports.createMatch = (req, res) => {
 }
 
 exports.getAllMatch = (req, res) => {
-    match.find()
-        .populate({
-            path: 'pari',
-            match: { _id: { $ne: null } }
-        })
-        .sort({ date_match: 1 })
-        .exec((error, list_match) => {
+    /* var aggregateQuery = match.aggregate();
+    match.aggregatePaginate(aggregateQuery, config.PaginationDefaultOptions,(error, list_match) => {
             if (error) {
                 res.status(500).send("Internal server error");
             } else {
                 res.status(200).json(list_match);
             }
-        });
+        }
+    ) */
+    var p = config.PaginationDefaultPageNumber;
+    var l = config.PaginationDefaultLimit;
+    if(req.body.limit==null || req.body.limit == ''){
+        l = req.body.l;
+    }
+    if(req.body.page==null || req.body.page == ''){
+        p = req.body.page;
+    }
+    var options = {
+        sort: { date_match: 1 },
+        populate: 'pari',
+        populate: 'equipe1',
+        populate: 'equipe2',
+        page: p, 
+        limit: l
+    };
+
+    match.paginate({}, options, (error, list_match) => {
+        if (error) {
+            res.status(500).send("Internal server error");
+        } else {
+            res.status(200).json(list_match);
+        }
+    })
 }
 
 exports.findByMatch = (req, res) => {
     match.findOne({ _id: req.params.id })
         .populate({
             path: 'pari',
+            match: { _id: { $ne: null } }
+        })
+        .populate({
+            path: 'equipe1',
+            match: { _id: { $ne: null } }
+        })
+        .populate({
+            path: 'equipe2',
             match: { _id: { $ne: null } }
         })
         .sort({ date_match: 1 })
@@ -136,20 +166,17 @@ exports.search = (req, res) => {
                 etat: etat
             });
         }
+    } 
+    if (periode) {
+        list = match.find({
+            date_match: {
+                $gte: periode.date_debut,
+                $lte: periode.date_fin
+            }
+        })
     } else {
-        if (periode) {
-            list = match.find({
-                etat: etat,
-                date_match: {
-                    $gte: periode.date_debut,
-                    $lte: periode.date_fin
-                }
-            })
-        } else {
-            list = match.find()
-        }
+        list = match.find()
     }
-
     if (pari) {
         list.populate({
             path: 'pari',
@@ -164,25 +191,15 @@ exports.search = (req, res) => {
     if (equipe) {
         list.populate({
             path: 'equipe1',
-            match : {
-                nom : { $regex: '.*' + equipe + '.*' }
-            }
+            match: { nom: { $regex: '.*' + equipe + '.*' } }
         });
         list.populate({
             path: 'equipe2',
-            match : {
-                nom : { $regex: '.*' + equipe + '.*' }
-            }
+            match: { nom: { $regex: '.*' + equipe + '.*' } }
         });
-    } else {
-        list.populate({
-            path: 'equipe1',
-        });
-        list.populate({
-            path: 'equipe2',
-        });
-    }
-    
+    } 
+
+
     list.sort({ date_match: 1 })
         .exec((error, liste_match) => {
             if (error) {

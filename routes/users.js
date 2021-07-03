@@ -73,7 +73,6 @@ exports.login = (req, res) => {
         /**
          * Pas besoin de role pour le login
          */
-        ,role: req.body.role  
     }, function (err, user) {
         if (err) return res.status(500).send('Error on the server.');
         if (!user) return res.status(404).send('No user found.');
