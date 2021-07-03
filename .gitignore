@@ -117,3 +117,4 @@ dist
 
 .idea
 /config/config.js
+package-lock.json
