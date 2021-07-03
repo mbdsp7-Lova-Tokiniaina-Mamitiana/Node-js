@@ -14,16 +14,6 @@ exports.createMatch = (req, res) => {
 }
 
 exports.getAllMatch = (req, res) => {
-    /* var aggregateQuery = match.aggregate();
-    match.aggregatePaginate(aggregateQuery, config.PaginationDefaultOptions,(error, list_match) => {
-            if (error) {
-                res.status(500).send("Internal server error");
-            } else {
-                res.status(200).json(list_match);
-            }
-        }
-    ) */
-
     var options = {
         sort: { date_match: 1 },
         populate: 'pari',
