@@ -1,8 +1,43 @@
 const match = require('../model/match');
+const moment= require('moment') ;
 
 exports.createMatch = (req, res) => {
     console.log("requete match:");
     console.log(req.body);
+    
+    if(req.body.date_match == null || req.body.date_match == ''){
+        res.status(403).send({message : 'Il faut choisir un date pour le match'});
+        return;
+    }
+    if(req.body.longitude == null || req.body.longitude == ''){
+        res.status(403).send({message : 'Il faut choisir une longitude'});
+        return;
+    }
+    if(req.body.latitude == null || req.body.latitude == ''){
+        res.status(403).send({message : 'Il faut choisir une latitude '});
+        return;
+    }
+    if(req.body.equipe1 == null || req.body.equipe1 == ''){
+        res.status(403).send({message : 'Il faut choisir une premiere equipe'});
+        return;
+    }
+    if(req.body.equipe2 == null || req.body.equipe2 == ''){
+        res.status(403).send({message : 'Il faut choisir une deuxieme equipe'});
+        return;
+    }
+    if(req.body.equipe2 == req.body.equipe1){
+        res.status(403).send({message : 'Il faut choisir deux equipes differentes'});
+        return;
+    }
+    var dateMomentObject = moment(req.body.date_match, "DD/MM/YYYY HH:mm:ss"); // 1st argument - string, 2nd argument - format
+    var date = dateMomentObject.toDate();
+    var now = new Date();
+    if(date<now){
+        console.log("now:"+now.toString() + " vs "+date);
+        res.status(403).send({message : 'Il faut choisir une date future'});
+        return;
+    }
+    req.body.date_match = date;
     match.create(req.body)
         .then((m) => {
             console.log("Match:");
@@ -12,7 +47,7 @@ exports.createMatch = (req, res) => {
         .catch(err => {
             console.log("error");
             console.log(err);
-            res.status(500).json({ err });
+            res.status(500).send({message:'Erreur serveur lors de la creation du match'})
         });
 }
 
