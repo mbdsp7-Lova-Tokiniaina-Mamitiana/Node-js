@@ -16,9 +16,9 @@ exports.createMatch = (req, res) => {
 exports.getAllMatch = (req, res) => {
     var options = {
         sort: { date_match: 1 },
+        populate: 'pari',
         populate: 'equipe1',
         populate: 'equipe2',
-        populate: 'pari',
         page: config.PaginationDefaultPageNumber, 
         limit: config.PaginationDefaultLimit
     };
