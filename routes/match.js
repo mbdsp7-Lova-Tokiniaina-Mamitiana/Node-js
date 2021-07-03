@@ -3,8 +3,10 @@ var config = require('../config/config');
 
 exports.createMatch = (req, res) => {
     match.create(req.body)
-        .then(() => {
-            res.status(200).json();
+        .then((m) => {
+            console.log("Match:");
+            console.log(m);
+            res.status(200).send(m);
         })
         .catch(err => {
             res.status(500).json({ err });

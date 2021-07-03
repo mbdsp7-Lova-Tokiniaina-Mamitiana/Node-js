@@ -106,7 +106,6 @@ app.route(prefix + '/paris')
     .get(pari.getAll);
 
 // On démarre le serveur
-
 app.listen(port, () => {
     console.log('Serveur démarré sur http://localhost:' + port);
 });

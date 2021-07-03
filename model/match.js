@@ -4,7 +4,8 @@ const mongoosePaginate = require('mongoose-paginate-v2');
 
 var MatchSchema = new mongoose.Schema({  
   date_match: Date,
-  localisation: String,
+  latitude: Number,
+  longitude: Number,
   equipe1: { type: Schema.Types.ObjectId, ref: 'Equipe'},
   equipe2: { type: Schema.Types.ObjectId, ref: 'Equipe'},
   etat: Boolean,
