@@ -113,13 +113,13 @@ exports.search = (req, res) => {
         match: { nom: { $regex: '.*' + equipe + '.*' } }
     })
     .sort({ date_match: 1 })
-        .exec((error, liste_match) => {
-            if (error) {
-                res.status(500).send("Internal server error");
-            } else {
-                res.status(200).json(liste_match);
-            }
-        });
+    .exec((error, liste_match) => {
+        if (error) {
+            res.status(500).send("Internal server error");
+        } else {
+            res.status(200).json(liste_match);
+        }
+    });
 }
 
 exports.addPari = (req, res) => {
