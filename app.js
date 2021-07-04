@@ -78,6 +78,10 @@ app.route(prefix + '/addPari')
 app.route(prefix + '/matchs/search')
     .post(match.search);
 
+/**
+    page : numéro de la page 
+    limit : nombre de données par page
+*/
 app.route(prefix + '/matchs')
     .get(match.getAllMatch);
 

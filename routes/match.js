@@ -21,8 +21,8 @@ exports.getAllMatch = (req, res) => {
             {path : 'equipe1'},
             {path : 'equipe2'}
         ],
-        page: config.PaginationDefaultPageNumber, 
-        limit: config.PaginationDefaultLimit,
+        page: parseInt(req.query.page) || 1, 
+        limit: parseInt(req.query.limit) || 10,
         lean: true
     };
 
