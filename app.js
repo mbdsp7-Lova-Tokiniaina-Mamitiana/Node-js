@@ -78,6 +78,10 @@ app.route(prefix + '/addPari')
 app.route(prefix + '/matchs/search')
     .post(match.search);
 
+/**
+    params.page : numéro de la page 
+    params.limit : nombre de données par page
+*/
 app.route(prefix + '/matchs')
     .get(match.getAllMatch);
 
@@ -105,8 +109,10 @@ app.route(prefix + '/pari/:id')
 app.route(prefix + '/paris')
     .get(pari.getAll);
 
-// On démarre le serveur
 
+app.use(express.static('public'));
+app.use('/public/country-flags', express.static('flags'))
+// On démarre le serveur
 app.listen(port, () => {
     console.log('Serveur démarré sur http://localhost:' + port);
 });

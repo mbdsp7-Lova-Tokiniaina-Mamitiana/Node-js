@@ -28,7 +28,8 @@ exports.createUser = (req, res) => {
             });
             res.status(200).send({
                 auth: true,
-                token: token
+                token: token,
+                id: user._id
             });
         });
 };
@@ -47,8 +48,9 @@ exports.connectUserByToken = (req, res) => {
             auth: false,
             message: 'Failed to authenticate token.'
         });
-
-        User.findById(decoded.user._id, {
+      //  console.log("decoded:");
+      //  console.log(decoded);
+        User.findById(decoded.id, {
             password: 0
         }, function (err, user) {
             if (err) return res.status(500).send("There was a problem finding the user.");
