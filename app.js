@@ -109,6 +109,9 @@ app.route(prefix + '/pari/:id')
 app.route(prefix + '/paris')
     .get(pari.getAll);
 
+
+app.use(express.static('public'));
+app.use('/public/country-flags', express.static('flags'))
 // On démarre le serveur
 app.listen(port, () => {
     console.log('Serveur démarré sur http://localhost:' + port);
