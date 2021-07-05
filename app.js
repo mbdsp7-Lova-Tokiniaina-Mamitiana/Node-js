@@ -82,6 +82,10 @@ app.route(prefix + '/removePari')
 app.route(prefix + '/matchs/search')
     .post(match.search);
 
+/**
+    params.page : numéro de la page 
+    params.limit : nombre de données par page
+*/
 app.route(prefix + '/matchs')
     .get(match.getAllMatch);
 
