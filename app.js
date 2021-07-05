@@ -79,8 +79,8 @@ app.route(prefix + '/matchs/search')
     .post(match.search);
 
 /**
-    page : numéro de la page 
-    limit : nombre de données par page
+    params.page : numéro de la page 
+    params.limit : nombre de données par page
 */
 app.route(prefix + '/matchs')
     .get(match.getAllMatch);
