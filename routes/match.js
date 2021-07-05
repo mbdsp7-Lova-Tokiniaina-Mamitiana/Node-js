@@ -28,7 +28,7 @@ exports.getAllMatch = (req, res) => {
 
     match.paginate({}, options, (error, list_match) => {
         if (error) {
-            res.status(500).send("Internal server error");
+            res.status(500).send(error);
         } else {
             res.status(200).json(list_match);
         }
