@@ -3,8 +3,10 @@ var config = require('../config/config');
 
 exports.createMatch = (req, res) => {
     match.create(req.body)
-        .then(() => {
-            res.status(200).json();
+        .then((m) => {
+            console.log("Match:");
+            console.log(m);
+            res.status(200).send(m);
         })
         .catch(err => {
             res.status(500).json({ err });
@@ -12,23 +14,16 @@ exports.createMatch = (req, res) => {
 }
 
 exports.getAllMatch = (req, res) => {
-    /* var aggregateQuery = match.aggregate();
-    match.aggregatePaginate(aggregateQuery, config.PaginationDefaultOptions,(error, list_match) => {
-            if (error) {
-                res.status(500).send("Internal server error");
-            } else {
-                res.status(200).json(list_match);
-            }
-        }
-    ) */
-
     var options = {
         sort: { date_match: 1 },
-        populate: 'pari',
-        populate: 'equipe1',
-        populate: 'equipe2',
-        page: config.PaginationDefaultPageNumber, 
-        limit: config.PaginationDefaultLimit
+        populate: [
+            {path : 'pari'},
+            {path : 'equipe1'},
+            {path : 'equipe2'}
+        ],
+        page: parseInt(req.query.page) || 1, 
+        limit: parseInt(req.query.limit) || 10,
+        lean: true
     };
 
     match.paginate({}, options, (error, list_match) => {
@@ -101,64 +96,30 @@ exports.search = (req, res) => {
     let etat = req.body.etat;
     let pari = req.body.pari;
     let equipe = req.body.equipe;
+
+    
     var list;
-
-    if (etat) {
-        if (periode) {
-            list = match.find({
-                etat: etat,
-                date_match: {
-                    $gte: periode.date_debut,
-                    $lte: periode.date_fin
-                }
-            })
+    math.find({})
+    .populate({
+        path: 'pari',
+        match: { _id: pari }
+    })
+    .populate({
+        path: 'equipe1',
+        match: { nom: { $regex: '.*' + equipe + '.*' } }
+    })
+    .populate({
+        path: 'equipe2',
+        match: { nom: { $regex: '.*' + equipe + '.*' } }
+    })
+    .sort({ date_match: 1 })
+    .exec((error, liste_match) => {
+        if (error) {
+            res.status(500).send("Internal server error");
         } else {
-            list = match.find({
-                etat: etat
-            });
+            res.status(200).json(liste_match);
         }
-    } 
-    if (periode) {
-        list = match.find({
-            date_match: {
-                $gte: periode.date_debut,
-                $lte: periode.date_fin
-            }
-        })
-    } else {
-        list = match.find()
-    }
-    if (pari) {
-        list.populate({
-            path: 'pari',
-            match: { _id: pari }
-        });
-    } else {
-        list.populate({
-            path: 'pari',
-            match: { _id: { $ne: null } }
-        });
-    }
-    if (equipe) {
-        list.populate({
-            path: 'equipe1',
-            match: { nom: { $regex: '.*' + equipe + '.*' } }
-        });
-        list.populate({
-            path: 'equipe2',
-            match: { nom: { $regex: '.*' + equipe + '.*' } }
-        });
-    } 
-
-
-    list.sort({ date_match: 1 })
-        .exec((error, liste_match) => {
-            if (error) {
-                res.status(500).send("Internal server error");
-            } else {
-                res.status(200).json(liste_match);
-            }
-        });
+    });
 }
 
 exports.addPari = (req, res) => {
