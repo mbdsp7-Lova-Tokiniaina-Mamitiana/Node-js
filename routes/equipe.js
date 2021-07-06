@@ -13,7 +13,7 @@ exports.createEquipe = (req, res) => {
 exports.getAllEquipe = (req, res) => {
     var options = {
         sort: { nom: 1 },
-        page: parseInt(req.query.page) || 1, 
+        page: parseInt(req.query.page) || 1,
         limit: parseInt(req.query.limit) || 10,
         lean: true
     };
@@ -29,25 +29,25 @@ exports.getAllEquipe = (req, res) => {
 
 
 exports.findById = (req, res) => {
-    equipe.findOne({_id:req.params.id})
-    .exec((error, liste_equipe) => {
-        if (error) {
-            res.status(500).send("Internal server error");
-        } else {
-            res.status(200).json(liste_equipe);
-        }
-    });
+    equipe.findOne({ _id: req.params.id })
+        .exec((error, liste_equipe) => {
+            if (error) {
+                res.status(500).send("Internal server error");
+            } else {
+                res.status(200).json(liste_equipe);
+            }
+        });
 }
 
 exports.update = (req, res) => {
     equipe.findByIdAndUpdate(req.params.id, {
         $set: req.body
-      }).then(() => {
-            getAll(req, res);
-      }).catch( err => {
-          console.log(err);
-          res.status(500).json({
-              error: "Internal Server Error"
-          });
-      });
+    }).then(() => {
+        getAll(req, res);
+    }).catch(err => {
+        console.log(err);
+        res.status(500).json({
+            error: "Internal Server Error"
+        });
+    });
 }

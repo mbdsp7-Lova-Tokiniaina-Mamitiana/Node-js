@@ -98,6 +98,19 @@ exports.login = (req, res) => {
 
 };
 
+
+exports.countUser = (req, res) => {
+    User.count({}, function (error, user_count) { 
+        if (error) {
+            res.status(500).send("Internal server error");
+        } else {
+            res.status(200).json(user_count);
+        }
+     })
+    
+}
+
+
 //Log out
 exports.logout = (req, res) => {
     res.status(200).send({

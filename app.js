@@ -55,7 +55,8 @@ app.route(prefixUser + '/login')
 app.route(prefixUser + '/logout')
     .post(user.logout);
 
-
+app.route(prefixUser + '/count')
+    .get(user.countUser);
 
 /*------------------ Match -----------------*/
 app.route(prefix + '/match')
