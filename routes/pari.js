@@ -11,12 +11,26 @@ function getAll(req, res) {
         });
 }
 exports.create = (req, res) => {
+    if(req.body.description == null || req.body.description == ''){
+        res.status(403).send({message : 'Il faut choisir une description du pari'});
+        return;
+    }
+    if(req.body.cote == null || req.body.cote == ''){
+        res.status(403).send({message : 'Il faut choisir une cote du pari'});
+        return;
+    }
+    if(req.body.cote <0){
+        res.status(403).send({message : 'Il faut choisir une cote positif'});
+        return;
+    }
+
     pari.create(req.body)
         .then((p) => {
+            console.log(p);
             res.status(200).send(p);
         })
         .catch(err => {
-            res.status(500).json({ err });
+            res.status(500).json({ message : 'Erreur serveur lors de la creation de pari' });
         });
 }
 
