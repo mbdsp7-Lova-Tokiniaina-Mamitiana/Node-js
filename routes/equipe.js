@@ -1,15 +1,5 @@
 const equipe = require('../model/equipe');
 
-function getAll(req, res) { 
-    equipe.find()
-        .exec((error, liste_equipe) => {
-            if (error) {
-                res.status(500).send("Internal server error");
-            } else {
-                res.status(200).json(liste_equipe);
-            }
-        });
-}
 exports.createEquipe = (req, res) => {
     equipe.create(req.body)
         .then((e) => {
@@ -21,14 +11,20 @@ exports.createEquipe = (req, res) => {
 }
 
 exports.getAllEquipe = (req, res) => {
-    equipe.find()
-        .exec((error, liste_equipe) => {
-            if (error) {
-                res.status(500).send("Internal server error");
-            } else {
-                res.status(200).json(liste_equipe);
-            }
-        });
+    var options = {
+        sort: { nom: 1 },
+        page: parseInt(req.query.page) || 1, 
+        limit: parseInt(req.query.limit) || 10,
+        lean: true
+    };
+
+    equipe.paginate({}, options, (error, list_match) => {
+        if (error) {
+            res.status(500).send("Internal server error");
+        } else {
+            res.status(200).json(list_match);
+        }
+    })
 }
 
 

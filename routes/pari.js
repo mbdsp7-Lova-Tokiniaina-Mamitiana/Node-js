@@ -1,6 +1,6 @@
 const pari = require('../model/pari');
 
-function getAll(req, res) { 
+function getAll(req, res) {
     pari.find()
         .exec((error, liste_pari) => {
             if (error) {
@@ -36,6 +36,7 @@ exports.create = (req, res) => {
 
 exports.getAll = (req, res) => {
     pari.find()
+    .sort({ cote : 1 })
         .exec((error, liste_pari) => {
             if (error) {
                 res.status(500).send("Internal server error");
@@ -47,25 +48,25 @@ exports.getAll = (req, res) => {
 
 
 exports.findById = (req, res) => {
-    pari.findOne({_id:req.params.id})
-    .exec((error, liste_pari) => {
-        if (error) {
-            res.status(500).send("Internal server error");
-        } else {
-            res.status(200).json(liste_pari);
-        }
-    });
+    pari.findOne({ _id: req.params.id })
+        .exec((error, liste_pari) => {
+            if (error) {
+                res.status(500).send("Internal server error");
+            } else {
+                res.status(200).json(liste_pari);
+            }
+        });
 }
 
 exports.update = (req, res) => {
     pari.findByIdAndUpdate(req.params.id, {
         $set: req.body
-      }).then(() => {
-            getAll(req, res);
-      }).catch( err => {
-          console.log(err);
-          res.status(500).json({
-              error: "Internal Server Error"
-          });
-      });
+    }).then(() => {
+        getAll(req, res);
+    }).catch(err => {
+        console.log(err);
+        res.status(500).json({
+            error: "Internal Server Error"
+        });
+    });
 }
