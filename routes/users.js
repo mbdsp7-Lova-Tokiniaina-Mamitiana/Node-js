@@ -48,8 +48,8 @@ exports.connectUserByToken = (req, res) => {
             auth: false,
             message: 'Failed to authenticate token.'
         });
-      //  console.log("decoded:");
-      //  console.log(decoded);
+        console.log("decoded:");
+        console.log(decoded);
         User.findById(decoded.id, {
             password: 0
         }, function (err, user) {
@@ -84,7 +84,8 @@ exports.login = (req, res) => {
         });
 
         var token = jwt.sign({
-            user: user
+            user: user,
+            id: user._id
         }, config.secret, {
             expiresIn: 86400 // expires in 24 hours
         });
