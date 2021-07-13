@@ -199,7 +199,7 @@ async function searchEquipe(nom) {
             listEquipe_result.push(el);
         }
     })
-    return listEquipe_result[0];
+    return (listEquipe_result[0])?listEquipe_result[0]:listEquipe_result;
 }
 
 async function searchEtat(etatMatch) { 
@@ -247,7 +247,7 @@ exports.search = async (req, res) => {
                 })
             } else {
                 liste_match.push(equipeSearch);
-            }
+            } 
         }
 
         if (req.body.periode != undefined) {

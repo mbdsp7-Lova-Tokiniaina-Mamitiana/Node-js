@@ -15,7 +15,8 @@ let uri = config.dburi;
 const options = {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    useFindAndModify: false
+    useFindAndModify: false,
+    useNewUrlParser: true
 };
 
 
