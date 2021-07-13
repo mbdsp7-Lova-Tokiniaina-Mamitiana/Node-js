@@ -298,8 +298,8 @@ exports.search = async (req, res) => {
                 { path: 'equipe1' },
                 { path: 'equipe2' }
             ],
-            page: parseInt(req.query.page) || 1,
-            limit: parseInt(req.query.limit) || 10,
+            page: parseInt(req.body.page) || 1,
+            limit: parseInt(req.body.limit) || 10,
             lean: true
         };
     
