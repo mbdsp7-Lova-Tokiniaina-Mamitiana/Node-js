@@ -146,7 +146,7 @@ async function searchPari(description) {
 
     let list_pari_result = [];
     liste_pari.filter(function (el) {
-        if (el.pari.length == true) {
+        if (el.pari.length != 0) {
             list_pari_result.push(el);
         }
     })
@@ -156,27 +156,28 @@ async function searchPari(description) {
 async function searchEquipe(nom) {
     const listEquipe = [];
 
-    const equipe1List = await match.find({
-        equipe1: { $ne: null }
-    })
+    const equipe1List = await match.find()
         .populate("pari")
-        .populate({
-            path: "equipe2"
-        })
         .populate({
             path: "equipe1",
             match: { nom: { $regex: `.*?${nom}.*?` } }
+        })
+        .populate({
+            path: "equipe2"
         })
         .exec();
 
     let result1 = equipe1List.filter(function (el) {
         return el.equipe1 != null;
     })
-    listEquipe.push(result1[0]);
 
-    const equipe2List = await match.find({
-        equipe2: { $ne: null }
-    })
+    if (result1.length>0) {
+        result1.filter(function (el) { 
+            listEquipe.push(el);
+        })
+    } 
+
+    const equipe2List = await match.find()
         .populate({ path: "pari" })
         .populate({
             path: "equipe1"
@@ -190,16 +191,18 @@ async function searchEquipe(nom) {
     let result2 = equipe2List.filter(function (el) {
         return el.equipe2 != null;
     })
-    listEquipe.push(result2[0]);
+    
+    if (result2.length>0) {
+        result2.filter(function (el) { 
+            listEquipe.push(el);
+        })
+    }
 
-
-    let listEquipe_result = [];
     listEquipe.filter(function (el) { 
-        if (el != null) {
-            listEquipe_result.push(el);
-        }
+        //console.log(el);
+        //console.log(el.length);
     })
-    return (listEquipe_result[0])?listEquipe_result[0]:listEquipe_result;
+    return listEquipe;
 }
 
 async function searchEtat(etatMatch) { 
@@ -224,33 +227,35 @@ exports.search = async (req, res) => {
     let liste_match = [];
     let liste_id_match = [];
 
+    let page = (req.body.page)?parseInt(req.body.page):1;
+    let limit = (req.body.limit)?parseInt(req.body.limit):10;
+
+    console.log("_____________________________________________________________________");
+    console.log("***********************************");
+    console.log("REQUETE ENVOYE : ");
+    console.log(req.body);
+    console.log("***********************************");
 
     try {
-        if (req.body.pari != undefined) {
+        if (req.body.pari != "undefined") {
             pariSearch = await searchPari(req.body.pari);
             if (pariSearch.length > 0)  {
                 pariSearch.filter(function (el) {
                     liste_match.push(el);
                 })
-            } else {
-                liste_match.push(pariSearch);
-            } 
-            liste_match.push(pariSearch);
+            }
         }
 
-        if (req.body.equipe != undefined) {
+        if (req.body.equipe != "undefined") {
             equipeSearch = await searchEquipe(req.body.equipe);
-
             if (equipeSearch.length > 0)  {
                 equipeSearch.filter(function (el) {
                     liste_match.push(el);
                 })
-            } else {
-                liste_match.push(equipeSearch);
-            } 
+            }
         }
 
-        if (req.body.periode != undefined) {
+        /* if (req.body.periode != "undefined") {
             periodeSearch = match.find({
                 date_match: {
                     '$gte': `${req.body.periode.avant} 00:00:00`,
@@ -258,9 +263,9 @@ exports.search = async (req, res) => {
                 }
             }).exec();
             liste_match.push(periodeSearch);
-        }
+        } */
 
-        if (req.body.isToday!= undefined) {
+        /* if (req.body.isToday!= "undefined") {
             console.log("TodaySearch");
             match.find({
                 date_match: new Date('2021-07-11')
@@ -269,9 +274,9 @@ exports.search = async (req, res) => {
                 console.log(data);
             });
             liste_match.push(todaySearch);
-        }
+        } */
 
-        if (req.body.etat != undefined) {
+        if (req.body.etat != "undefined") {
             etatSearch = await searchEtat(req.body.etat);
 
             if (etatSearch.length > 0)  {
@@ -285,11 +290,8 @@ exports.search = async (req, res) => {
 
 
         /*------- Enregistre tous les id du match pour la pagination -------*/    
-        liste_match.filter(function (el) {
-            liste_id_match.push(el._id);
-        })
         
-
+        
 
         var options = {
             sort: { date_match: 1 },
@@ -298,16 +300,33 @@ exports.search = async (req, res) => {
                 { path: 'equipe1' },
                 { path: 'equipe2' }
             ],
-            page: parseInt(req.body.page) || 1,
-            limit: parseInt(req.body.limit) || 10,
+            page: page,
+            limit: limit,
             lean: true
         };
     
-        match.paginate({
-            "_id": { "$in": liste_id_match }
-        }, options, (error, list_match_paginate) => {
-            res.status(200).json(list_match_paginate);
-        })
+        if (req.body.pari == "undefined" && req.body.equipe == "undefined" && req.body.periode == "undefined" && req.body.isToday == "undefined" && req.body.etat == "undefined") {
+            match.paginate({}, options, (error, list_match_paginate) => {
+                res.status(200).json(list_match_paginate);
+            })
+        } else {
+            let match_result = (liste_match[0].length == undefined) ? liste_match: liste_match[0];
+            match_result.filter(function (el) {
+                liste_id_match.push(el._id);
+            })
+
+            console.log(match_result);
+            match.paginate({
+                "_id": { "$in": liste_id_match }
+            }, options, (error, list_match_paginate) => {
+                res.status(200).json(list_match_paginate);
+            })
+        }  
+        /* let match_result = (liste_match[0].length == undefined) ? liste_match: liste_match[0];
+        //console.log(match_result);
+        res.status(200).json(liste_match);  */
+
+        console.log("_____________________________________________________________________");
     } catch (error) {
         console.error(error);
         res.status(500).send({ message: "Internal server error", error: error.message });
