@@ -64,7 +64,8 @@ app.route(prefix + '/match')
     .post(match.createMatch);
 
 app.route(prefix + '/match/:id')
-    .get(match.findByMatch);
+    .get(match.findByMatch)
+    .delete(match.removeMatch);
 
 app.route(prefix + '/addPari')
     .post(match.addPari);
