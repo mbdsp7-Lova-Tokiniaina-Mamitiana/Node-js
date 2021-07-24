@@ -102,6 +102,8 @@ app.route(prefix + '/equipe/:id')
 
 app.route(prefix + '/equipes')
     .get(equipe.getAllEquipe);
+app.route(prefix + '/equipes2')
+    .get(equipe.getAllEquipe2);    
 
 
 /*------------------ Pari -----------------*/

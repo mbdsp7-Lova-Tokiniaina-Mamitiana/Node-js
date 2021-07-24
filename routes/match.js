@@ -33,11 +33,13 @@ exports.createMatch = (req, res) => {
         res.status(403).send({ message: 'Il faut choisir deux equipes differentes' });
         return;
     }
-    var dateMomentObject = moment(req.body.date_match, "YYYY-MM-DD HH:mm:ss"); // 1st argument - string, 2nd argument - format
+    var dateMomentObject = moment(req.body.date_match, "YYYY-MM-DD hh:mm"); // 1st argument - string, 2nd argument - format
     var date = dateMomentObject.toDate();
+   
     var now = new Date();
+    console.log("now:" + now.toString() + " vs " + date);
     if (date < now) {
-        console.log("now:" + now.toString() + " vs " + date);
+        
         res.status(403).send({ message: 'Il faut choisir une date future' });
         return;
     }
