@@ -15,7 +15,8 @@ let uri = config.dburi;
 const options = {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    useFindAndModify: false
+    useFindAndModify: false,
+    useNewUrlParser: true
 };
 
 
@@ -63,7 +64,8 @@ app.route(prefix + '/match')
     .post(match.createMatch);
 
 app.route(prefix + '/match/:id')
-    .get(match.findByMatch);
+    .get(match.findByMatch)
+    .delete(match.removeMatch);
 
 app.route(prefix + '/addPari')
     .post(match.addPari);
@@ -101,6 +103,8 @@ app.route(prefix + '/equipe/:id')
 
 app.route(prefix + '/equipes')
     .get(equipe.getAllEquipe);
+app.route(prefix + '/equipes2')
+    .get(equipe.getAllEquipe2);    
 
 
 /*------------------ Pari -----------------*/

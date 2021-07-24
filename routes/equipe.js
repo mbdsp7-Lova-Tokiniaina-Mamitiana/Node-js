@@ -26,6 +26,16 @@ exports.getAllEquipe = (req, res) => {
         }
     })
 }
+exports.getAllEquipe2 = (req, res) => {
+    equipe.find().sort('nom')
+    .exec((error, liste_equipe) => {
+        if (error) {
+            res.status(500).send("Internal server error");
+        } else {
+            res.status(200).json(liste_equipe);
+        }
+    });
+}
 
 
 exports.findById = (req, res) => {
