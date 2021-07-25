@@ -6,7 +6,6 @@ var config = require('../config/config');
 
 
 exports.createMatch = (req, res) => {
-    console.log("requete match:");
     console.log(req.body);
 
     if (req.body.date_match == null || req.body.date_match == '') {
@@ -386,6 +385,7 @@ exports.addPari = (req, res) => {
             }
         });
 }
+
 exports.terminer = (req, res) => {
     match.findOne({ _id: req.body.match })
         .exec((error, m) => {
@@ -400,6 +400,7 @@ exports.terminer = (req, res) => {
             }
         });
 }
+
 exports.removePari = (req, res) => {
     match.findOne({ _id: req.body.match })
         .exec((error, m) => {
@@ -414,4 +415,14 @@ exports.removePari = (req, res) => {
                 })
             }
         });
+}
+
+exports.removeMatch = (req, res) => {
+    match.findByIdAndDelete(req.params.id, null, (error, docs) => {
+        if (error) {
+            console.log(error);
+            return res.send(error);
+        }
+        res.status(200).json(docs);
+    });
 }
