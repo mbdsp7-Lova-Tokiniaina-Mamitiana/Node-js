@@ -196,6 +196,7 @@ async function searchEquipe(nom) {
         }
     }
 
+    console.log(listEquipe);
     return listEquipe;
 }
 
@@ -350,8 +351,10 @@ exports.search = async (req, res) => {
                 res.status(200).json(list_match_paginate);
             })
         } else {
-            let match_result = (liste_match[0].length == undefined) ? liste_match : liste_match[0];
-
+            let match_result = [];
+            if (liste_match.length != 0) {
+                match_result = (liste_match[0].length == undefined) ? liste_match : liste_match[0];
+            }
             match_result.filter(function (el) {
                 liste_id_match.push(el._id);
             })
