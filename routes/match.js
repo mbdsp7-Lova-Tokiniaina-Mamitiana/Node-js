@@ -352,7 +352,8 @@ exports.search = async (req, res) => {
             lean: true
         };
 
-        if (req.body.pari == undefined && req.body.equipe == undefined && req.body.periode == undefined && req.body.isToday == undefined && req.body.etat == undefined) {
+        if (req.body.pari == undefined && req.body.equipe == undefined && req.body.date_debut == undefined && req.body.date_fin == undefined && req.body.isToday == undefined && req.body.etat == undefined) {
+            console.log("Header");
             match.paginate({}, options, (error, list_match_paginate) => {
                 res.status(200).json(list_match_paginate);
             })
