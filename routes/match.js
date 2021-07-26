@@ -3,7 +3,7 @@ const pari = require('../model/pari');
 const equipe = require('../model/equipe');
 const moment = require('moment');
 var config = require('../config/config');
-
+const today = new Date().toLocaleDateString('fr-CA');
 
 exports.createMatch = (req, res) => {
     console.log(req.body);
@@ -196,25 +196,54 @@ async function searchEquipe(nom) {
             listEquipe.push(el);
         }
     }
-
-    console.log(listEquipe);
     return listEquipe;
 }
 
-async function searchEtat(etatMatch) {
-    const liste_pari_etat = await match.find({
-        etat: etatMatch
-    })
-        .populate("equipe1")
-        .populate("equipe2")
-        .populate("pari")
-        .exec();
+async function searchEtat(etatMatch, liste_match) {
+    let searchResult = [];
 
-    return liste_pari_etat;
+    if (liste_match.length == 0) {
+        searchResult = await match.find({
+            etat: etatMatch
+        })
+            .populate("equipe1")
+            .populate("equipe2")
+            .populate("pari")
+            .exec();
+    } else {
+        for (const item of liste_match) {
+            if (item.etat) {
+                searchResult.push(item)
+            }
+        }
+    }
+    return searchResult;
 }
 
-function isDateBetween(dateBefore, dateMatch, dateAfter) {
-    return (dateMatch.getTime() >= dateBefore.getTime() && dateMatch.getTime() <= dateAfter.getTime());
+async function isDateBetween(dateBefore, dateMatch, dateAfter) {
+    // Date Before && Date After
+    if (dateBefore && dateAfter) {
+        const _dateBefore = new Date(dateBefore);
+        const _dateAfter = new Date(dateAfter);
+        _dateBefore.setDate(_dateBefore.getDate()-1);
+
+        return (dateMatch.getTime() >= _dateBefore.getTime() && dateMatch.getTime() <= _dateAfter.getTime());
+
+    // Date Before 
+    } else if(dateBefore) {
+        const _dateBefore = new Date(dateBefore);
+        _dateBefore.setDate(_dateBefore.getDate()-1);
+
+        return (dateMatch.getTime() >= _dateBefore.getTime());
+
+    // Date After
+    } else if(dateAfter) {
+        const _dateAfter = new Date(dateAfter);
+
+        return (dateMatch.getTime() <= _dateAfter.getTime());
+    }
+    return true;
+    
 }
 
 async function searchMatch(dateDebut,dateFin, liste_match) {
@@ -230,21 +259,25 @@ async function searchMatch(dateDebut,dateFin, liste_match) {
         matchs = liste_match;
     }
 
-    matchs.forEach((match) => {
-        const dateMatch = new Date(match.date_match);
+    for (const item of matchs) {
+        const dateMatch = new Date(item.date_match);
         const dateMatchComplet = new Date(dateMatch.getFullYear() + '-' + (+dateMatch.getMonth() + 1) + '-' + dateMatch.getDate());
-        const result = isDateBetween(dateDebut, dateMatchComplet, dateFin);
+        const result = await isDateBetween(dateDebut, dateMatchComplet, dateFin);
 
         if (result) {
-            searchResult.push(match)
+            searchResult.push(item)
         }
-    });
+    }
     //console.log(searchResult);
     return searchResult;
 }
 
+async function isTodayMatch(liste_match) { 
+    return searchMatch(today,today, liste_match);
+}
+
 exports.search = async (req, res) => {
-    const today = new Date().toLocaleDateString('fr-CA');
+    
     let periodeSearch = []; //yyyy-mm-dd
     let todaySearch = [];
     let etatSearch = [];
@@ -267,9 +300,9 @@ exports.search = async (req, res) => {
             console.log("*** Recherche Pari ***");
             pariSearch = await searchPari(req.body.pari);
             if (pariSearch.length > 0) {
-                pariSearch.filter(function (el) {
-                    liste_match.push(el);
-                })
+                for (const item of pariSearch) {
+                    liste_match.push(item);
+                }
             }
         }
 
@@ -277,58 +310,30 @@ exports.search = async (req, res) => {
             console.log("*** Recherche Equipe ***");
             equipeSearch = await searchEquipe(req.body.equipe);
             if (equipeSearch.length > 0) {
-                equipeSearch.filter(function (el) {
-                    liste_match.push(el);
-                })
+                for (const item of equipeSearch) {
+                    liste_match.push(item);
+                }
             }
         }
 
         if (req.body.etat) {
             console.log("*** Recherche Etat ***");
-            etatSearch = await searchEtat(req.body.etat);
-
-            if (etatSearch.length > 0) {
-                etatSearch.filter(function (el) {
-                    liste_match.push(el);
-                })
-            } else {
-                liste_match.push(etatSearch);
-            }
+            etatSearch = await searchEtat(req.body.etat, liste_match);
+            liste_match = etatSearch;
         }
 
         if (req.body.isToday) {
-            console.log("*** Recherche Today match ***");
-            const todayMatch = await match.find()
-                .populate("equipe1")
-                .populate("equipe2")
-                .populate("pari")
-                .exec();
-
-            todayMatch.filter(function (el) {
-                const dateMatch = new Date(el.date_match);
-                const dateMatchComplet = new Date(dateMatch.getFullYear() + '-' + (+dateMatch.getMonth() + 1) + '-' + dateMatch.getDate()).toLocaleDateString('fr-CA');
-                if (today == dateMatchComplet) {
-                    todaySearch.push(el)
-                }
-            })
-
-            if (todaySearch.length > 0) {
-                todaySearch.filter(function (el) {
-                    liste_match.push(el);
-                })
-            }
+            console.log("*** Recherche isToday Match ***");
+            todaySearch = await isTodayMatch(liste_match);
+            liste_match = todaySearch;
         }
 
         if (req.body.periode) {
             console.log("*** Recherche Periode ***");
-            const dateDebut = new Date(req.body.periode.date_debut);
-            const dateFin = new Date(req.body.periode.date_fin);
+            const dateDebut = req.body.periode.date_debut;
+            const dateFin = req.body.periode.date_fin;
             periodeSearch = await searchMatch(dateDebut,dateFin, liste_match);
-            if (periodeSearch.length > 0) {
-                periodeSearch.filter(function (el) {
-                    liste_match.push(el);
-                })
-            }
+            liste_match = periodeSearch;
         }
 
 
@@ -356,9 +361,10 @@ exports.search = async (req, res) => {
             if (liste_match.length != 0) {
                 match_result = (liste_match[0].length == undefined) ? liste_match : liste_match[0];
             }
-            match_result.filter(function (el) {
-                liste_id_match.push(el._id);
-            })
+
+            for (const item of match_result) {
+                liste_id_match.push(item._id);
+            }
 
             //console.log(match_result);
             match.paginate({
