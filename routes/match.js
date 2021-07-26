@@ -328,10 +328,10 @@ exports.search = async (req, res) => {
             liste_match = todaySearch;
         }
 
-        if (req.body.periode) {
+        if (req.body.date_debut || req.body.date_fin) {
             console.log("*** Recherche Periode ***");
-            const dateDebut = req.body.periode.date_debut;
-            const dateFin = req.body.periode.date_fin;
+            const dateDebut = req.body.date_debut;
+            const dateFin = req.body.date_fin;
             periodeSearch = await searchMatch(dateDebut,dateFin, liste_match);
             liste_match = periodeSearch;
         }
