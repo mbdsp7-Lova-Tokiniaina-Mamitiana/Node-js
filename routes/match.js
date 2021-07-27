@@ -397,18 +397,13 @@ exports.addPari = (req, res) => {
 }
 
 exports.terminer = (req, res) => {
-    match.findOne({ _id: req.body.match })
-        .exec((error, m) => {
-            if (error) {
-                res.status(500).send("Internal server error");
-            } else {
-                m.etat = false;
-                m.save(function (error, liste) {
-                    if (error) return res.send(error);
-                    res.status(200).json(liste);
-                })
-            }
-        });
+    match.findByIdAndUpdate(req.body.match._id, {'etat': true}, (err, result) => {
+        if (err) {
+            res.status(500).send("Internal server error");
+        } else {
+            res.status(200).json('Match terminé');
+        }
+    })
 }
 
 exports.removePari = (req, res) => {
