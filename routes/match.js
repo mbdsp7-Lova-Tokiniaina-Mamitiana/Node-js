@@ -163,7 +163,8 @@ async function searchEquipe(nom) {
         .populate("pari")
         .populate({
             path: "equipe1",
-            match: { nom: { $regex: `.*?${nom}.*?` } }
+            //match: { nom: { $regex: `.*?${nom}.*?`, '$options' : 'i' } }
+            match: { nom: { $regex: new RegExp(`^${nom}$`), $options: 'i' }} 
         })
         .populate({
             path: "equipe2"
