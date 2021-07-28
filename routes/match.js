@@ -56,27 +56,15 @@ exports.createMatch = (req, res) => {
         });
 }
 
-exports.getAllMatch = (req, res) => {
-
-    var options = {
-        sort: { date_match: 1 },
-        populate: [
-            { path: 'pari' },
-            { path: 'equipe1' },
-            { path: 'equipe2' }
-        ],
-        page: parseInt(req.query.page) || 1,
-        limit: parseInt(req.query.limit) || 10,
-        lean: true
-    };
-
-    match.paginate({}, options, (error, list_match) => {
-        if (error) {
-            res.status(500).send(error);
-        } else {
-            res.status(200).json(list_match);
-        }
-    })
+exports.getMatchCount = (req, res) => {
+    match.count()
+        .exec((error, count_match) => {
+            if (error) {
+                res.status(500).send("Internal server error");
+            } else {
+                res.status(200).json(count_match);
+            }
+        });
 }
 
 exports.findByMatch = (req, res) => {
@@ -186,7 +174,7 @@ async function searchEquipe(nom) {
         })
         .populate({
             path: "equipe2",
-            match: { nom: { $regex: `.*?${nom}.*?` } }
+            match: { nom: { $regex: `.*?${nom}.*?`, '$options' : 'i' } }
         })
         .exec();
 
