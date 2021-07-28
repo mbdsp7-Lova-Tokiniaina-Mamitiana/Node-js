@@ -385,7 +385,7 @@ exports.addPari = (req, res) => {
 }
 
 exports.terminer = (req, res) => {
-    match.findByIdAndUpdate(req.body.match._id, {'etat': true}, (err, result) => {
+    match.findByIdAndUpdate(req.body.id, {'etat': true}, (err, result) => {
         if (err) {
             res.status(500).send("Internal server error");
         } else {
