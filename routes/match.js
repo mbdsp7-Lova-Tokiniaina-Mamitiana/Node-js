@@ -129,7 +129,7 @@ async function searchPari(description) {
         .populate("equipe2")
         .populate({
             path: "pari",
-            match: { description: { $regex: `.*?${description}.*?` } }
+            match: { description: { $regex: `.*?${description}.*?`, '$options' : 'i' } }
         })
         .exec();
 
