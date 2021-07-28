@@ -89,8 +89,8 @@ app.route(prefix + '/matchs/search')
     params.page : numéro de la page 
     params.limit : nombre de données par page
 */
-app.route(prefix + '/matchs')
-    .get(match.getAllMatch);
+app.route(prefix + '/matchsCount')
+    .get(match.getMatchCount);
 
 
 /*------------------ Equipe -----------------*/
@@ -116,7 +116,8 @@ app.route(prefix + '/pari/:id')
     .post(pari.update)
 
 app.route(prefix + '/paris')
-    .get(pari.getAll);
+    .get(pari.getAll)
+    .post(pari.search)
 
 
 app.use(express.static('public'));
