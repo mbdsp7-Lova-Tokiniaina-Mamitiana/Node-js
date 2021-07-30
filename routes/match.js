@@ -45,14 +45,30 @@ exports.createMatch = (req, res) => {
     req.body.date_match = date;
     match.create(req.body)
         .then((m) => {
-            console.log("Match:");
-            console.log(m);
-            res.status(200).send(m);
+            const createPariPromises = req.body.paris.filter(p => !p._id || p._id === '').map(p => {
+                delete p._id;
+                return pari.create(p);
+            });
+            Promise.all(createPariPromises).then(paris => {
+               m.pari.push(...paris);
+               m.save((error, matchSaved) => {
+                   if (error) {
+                       console.log("Erreur serveur lors de la liaison des paris");
+                       console.log(err);
+                       res.status(500).send({ message: 'Erreur serveur lors de la liaison des paris' });
+                   }
+                   res.status(200).json(matchSaved);
+               });
+            }).catch(error => {
+                console.log("Erreur serveur lors de la creation des paris");
+                console.log(err);
+                res.status(500).send({ message: 'Erreur serveur lors de la creation des paris' });
+            });
         })
         .catch(err => {
             console.log("error");
             console.log(err);
-            res.status(500).send({ message: 'Erreur serveur lors de la creation du match' })
+            res.status(500).send({ message: 'Erreur serveur lors de la creation du match' });
         });
 }
 
