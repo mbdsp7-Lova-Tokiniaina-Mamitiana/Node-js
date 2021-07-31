@@ -72,6 +72,34 @@ exports.createMatch = (req, res) => {
         });
 }
 
+/**
+ * Assign list of pari to match
+ * @param req req.body will contain the id (req.body._id) of the match and his pari list (req.body.paris)
+ * @param res
+ */
+exports.managePari = (req, res) => {
+    match.findById(req.body._id, (error, m) => {
+        // Create all new pari in req.body.paris
+        const createPariPromises = req.body.paris.filter(p => !p._id || p._id === '').map(p => {
+            delete p._id;
+            return pari.create(p);
+        });
+        Promise.all(createPariPromises).then(paris => {
+            // Remove pari deleted in req from m
+            m.pari = m.pari.filter(p => req.body.paris.filter(updatedParis => updatedParis._id).map(updatedParis => updatedParis._id.toString()).includes(p._id.toString()));
+            /*m.pari = m.pari.filter(p => req.body.paris.includes(p));*/
+            // Add new paris to m
+            m.pari.push(...paris);
+            m.save((error, matchSaved) => {
+                if (error) {
+                    res.status(500).send({ message: 'Erreur serveur lors de la liaison des paris' });
+                }
+                else res.status(200).json(matchSaved);
+            });
+        });
+    });
+}
+
 exports.getMatchCount = (req, res) => {
     match.count()
         .exec((error, count_match) => {

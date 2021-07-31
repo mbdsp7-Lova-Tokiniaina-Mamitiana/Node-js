@@ -61,7 +61,8 @@ app.route(prefixUser + '/count')
 
 /*------------------ Match -----------------*/
 app.route(prefix + '/match')
-    .post(match.createMatch);
+    .post(match.createMatch)
+    .put(match.managePari);
 
 app.route(prefix + '/match/:id')
     .get(match.findByMatch)
