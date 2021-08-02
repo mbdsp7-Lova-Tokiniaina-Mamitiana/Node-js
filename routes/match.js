@@ -45,6 +45,9 @@ exports.createMatch = (req, res) => {
     req.body.date_match = date;
     match.create(req.body)
         .then((m) => {
+            if(req.body.paris== undefined){
+                req.body.paris = [];
+            }
             const createPariPromises = req.body.paris.filter(p => !p._id || p._id === '').map(p => {
                 delete p._id;
                 return pari.create(p);
