@@ -352,7 +352,7 @@ exports.search = async (req, res) => {
             }
         }
 
-        if (req.body.etat || !req.body.etat) {
+        if (req.body.etat || req.body.etat != undefined) {
             console.log("*** Recherche Etat ***");
             etatSearch = await searchEtat(req.body.etat, liste_match);
             liste_match = etatSearch;
